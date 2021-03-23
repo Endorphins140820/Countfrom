@@ -53,7 +53,7 @@ function ex4()
             $num++;
         }
     }
-    echo "The number of movies released before 2000 is : " . +$num . "\n";
+    echo "The number of movies released before 2000 is : " . +$num . " film" . "\n";
 
 }
 
@@ -91,11 +91,17 @@ function ex6()
     $open_file = file_get_contents('films.json', FILE_USE_INCLUDE_PATH);
     $decode_file = json_decode($open_file, true);
     $sperate_arr = $decode_file['feed']['entry'];
-    $num = null;
-    foreach ($sperate_arr as $value){
-        var_dump($value['category']['attributes']['label']);
-        $category = $value['category']['attributes']['label'];
+    $categories = [];
+    foreach ($sperate_arr as $key => $value) {
+        $label = $value['category']['attributes']['label'];
+        if (empty($categories[$label])) {
+            $categories[$label] = 1;
+        } else {
+            $categories[$label]++;
+        }
     }
+    arsort($categories);
+    print_r("Category most represented film : " . key($categories) . "\n");
 
 }
 
@@ -119,8 +125,43 @@ function ex8()
     }
 
 }
-function ex9(){
+
+function ex9()
+{
     $open_file = file_get_contents('films.json', FILE_USE_INCLUDE_PATH);
     $decode_file = json_decode($open_file, true);
-    $sperate_arr = $decode_file['feed']['entry'];
-}ex6();
+    $seperate_arr = $decode_file['feed']['entry'];
+    $arr = [];
+    foreach ($seperate_arr as $value) {
+        $release_date = $value['im:releaseDate']['label'];
+        $dateched_month = substr($release_date, 5, 2);
+        if (empty($arr[$dateched_month])) {
+            $arr[$dateched_month] = 1;
+        } else {
+            $arr[$dateched_month]++;
+        }
+    }
+    arsort($arr);
+    $times = (array_shift($arr));
+    $month = array_search($times, $arr);
+    print_r("Month with the most cinema releases : " . $month . "  With " . $times . " Times" . "\n");
+}
+
+function ex10()
+{
+    $open_file = file_get_contents('films.json', FILE_USE_INCLUDE_PATH);
+    $decode_file = json_decode($open_file, true);
+    $seperate_arr = $decode_file['feed']['entry'];
+    $money = [];
+    $film = [];
+    foreach ($seperate_arr as $key => $value){
+        $name_film = $value['im:name']['label'];
+        $price =$value['im:price']['label'];
+        $price = trim($price,"$");
+        $money[$name_film] = $price;
+    }
+    asort($money);
+    print_r("top 10 movies to see with a limited budget : ");
+    print_r(array_slice($money,0,10));
+}
+ex10();
